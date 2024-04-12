@@ -262,6 +262,83 @@ ALTER TABLE tb_detalles_cursos
 ADD CONSTRAINT fk_detalle_curso_detalle_prestamo FOREIGN KEY (id_detalle_prestamo) REFERENCES tb_detalle_prestamos(id_detalle_prestamo);
 
 
+
+-- Trigger
+DELIMITER //
+
+CREATE TRIGGER actualizar_stock_disponible
+AFTER INSERT ON tb_inventario_herramienta
+FOR EACH ROW
+BEGIN
+    UPDATE tb_inventario_herramienta
+    SET stock_disponible = stock - en_uso
+    WHERE codigo_herramienta = NEW.codigo_herramienta;
+END;
+//
+
+CREATE TRIGGER actualizar_stock_disponible_update
+AFTER UPDATE ON tb_inventario_herramienta
+FOR EACH ROW
+BEGIN
+    UPDATE tb_inventario_herramienta
+    SET stock_disponible = NEW.stock - NEW.en_uso
+    WHERE codigo_herramienta = NEW.codigo_herramienta;
+END;
+//
+
+CREATE TRIGGER actualizar_stock_disponible_delete
+AFTER DELETE ON tb_inventario_herramienta
+FOR EACH ROW
+BEGIN
+    UPDATE tb_inventario_herramienta
+    SET stock_disponible = stock - en_uso
+    WHERE codigo_herramienta = OLD.codigo_herramienta;
+END;
+//
+
+DELIMITER ;
+
+-- Procedimiento almacenado
+DELIMITER //
+
+CREATE PROCEDURE spSeleccionarUsuariosActivos()
+BEGIN
+    -- Declarar una variable para el estado de usuario
+    DECLARE estado_usuario ENUM('Activo', 'Inactivo');
+
+    -- Asignar el valor 'Activo' a la variable de estado
+    SET estado_usuario = 'Activo';
+
+    -- Seleccionar usuarios activos
+    SELECT *
+    FROM tbUsuarios
+    WHERE EstadoEmpleado = estado_usuario;
+
+END;
+//
+
+DELIMITER ;
+
+-- Funcion
+
+DELIMITER //
+
+CREATE FUNCTION contar_prestamos_usuario(id_usuario INT) RETURNS INT
+BEGIN
+    DECLARE total_prestamos INT;
+
+    -- Contar la cantidad de préstamos realizados por el usuario
+    SELECT COUNT(*)
+    INTO total_prestamos
+    FROM tbPrestamos
+    WHERE IdUsuario = id_usuario;
+
+    RETURN total_prestamos;
+END;
+//
+
+DELIMITER ;
+
 -- Registro 
 -- Insertar datos en la tabla tbCargos
 INSERT INTO tb_cargos (nombre_cargo) VALUES
