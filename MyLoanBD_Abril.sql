@@ -366,3 +366,13 @@ INSERT INTO tb_recuperacion_contra (id_codigo, codigo_recuperacion, id_usuario) 
 (1, 'ABC123', 1),
 (2, 'DEF456', 2),
 (3, 'GHI789', 3);
+
+-- Creacion de usuario y asignacion de persmisos
+-- Crear el usuario
+CREATE USER 'nombre_base_datos_desarrollador'@'localhost' IDENTIFIED BY 'contraseña'; -- Reemplaza 'contraseña' con la contraseña deseada
+
+-- Asignar permisos para DML
+GRANT SELECT, INSERT, UPDATE, DELETE ON my_loan_bd.* TO 'nombre_base_datos_desarrollador'@'localhost';
+
+-- Asignar permisos para ejecutar y crear funciones, procedimientos, triggers y vistas
+GRANT EXECUTE, CREATE ROUTINE, CREATE VIEW, SHOW VIEW ON my_loan_bd.* TO 'nombre_base_datos_desarrollador'@'localhost';
