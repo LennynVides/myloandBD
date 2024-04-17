@@ -32,7 +32,7 @@ CREATE TABLE tb_datos_empleados (
     id_datos_empleado INT PRIMARY KEY AUTO_INCREMENT,
     nombre_empleado VARCHAR(255) NOT NULL,
     apellido_empleado VARCHAR(255) NOT NULL,
-    telefono VARCHAR(255) NULL,
+    telefono VARCHAR(255) UNIQUE NULL,
     estado_empleado ENUM('Activo', 'Inactivo') NOT NULL,
     foto_empleado LONGBLOB NULL,
     id_usuario INT NOT NULL
@@ -43,7 +43,7 @@ CREATE TABLE tb_instructores (
     id_instructor INT PRIMARY KEY AUTO_INCREMENT,
     nombre_instructor VARCHAR(255) NOT NULL,
     apellido_instructor VARCHAR(255) NOT NULL,
-    telefono VARCHAR(255) NOT NULL,
+    telefono VARCHAR(255) UNIQUENOT NULL,
     estado_empleado ENUM('Activo', 'Inactivo'),
     foto_empleado LONGBLOB NULL,
     id_usuario INT NOT NULL,
@@ -61,13 +61,14 @@ CREATE TABLE tb_cursos (
     grupo VARCHAR(100) NULL,
     programa_formacion ENUM('HTP','EC','FCAT') NULL,
     codigo_curso VARCHAR(100) NOT NULL,
-    id_instructor INT NULL
+    id_instructor INT NULL,
+CONSTRAINT chk_cantidad_p CHECK (cantidad_personas >= 1)
 );
 
 -- Tabla de Prestamos
 CREATE TABLE tb_prestamos (
     id_prestamo INT PRIMARY KEY AUTO_INCREMENT,
-    fecha_solicitud DATE NOT NULL,
+    fecha_solicitud DATE CHECK (fecha_solicitud >= CURDATE()) NOT NULL,
     programa_formacion ENUM('HTP','EC','FCAT') NOT NULL,
     estado_prestamo ENUM('Aceptado','Denegado','En Espera'),
     observacion VARCHAR(300) NULL,
@@ -106,7 +107,8 @@ CREATE TABLE tb_materiales (
     id_material INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     descripcion VARCHAR(300),
-    cantidad INT
+    cantidad INT,
+CONSTRAINT chk_cantidad_material CHECK (cantidad >= 1)
 );
 
 -- Tabla inventario de Herramienta
@@ -116,7 +118,9 @@ CREATE TABLE tb_inventario_herramienta (
     descripcion VARCHAR(300),
     stock INT,
     en_uso INT,
-    id_institucion INT
+    id_institucion INT,
+CONSTRAINT chk_stock CHECK (stock >= 1),
+CONSTRAINT chk_en_uso CHECK (en_uso >= 1)
 );
 
 
@@ -126,7 +130,8 @@ CREATE TABLE tb_equipos (
     nombre VARCHAR(100),
     descripcion VARCHAR(300),
     cantidad INT,
-    id_espacio INT
+    id_espacio INT,
+CONSTRAINT chk_cantidad_equipos CHECK (cantidad >= 1)
 );
 
 -- Tabla inventario de equipos
@@ -139,7 +144,8 @@ CREATE TABLE tb_detalle_prestamos (
     id_espacio INT NULL,
     id_equipo INT NULL,
     id_material INT NULL,
-    codigo_herramienta INT NULL
+    codigo_herramienta INT NULL,
+CONSTRAINT chk_cantidad_inventario_equipo CHECK (cantidad >= 1)
 );
 
 -- Tabla para menejar el periodo de los prestamos
