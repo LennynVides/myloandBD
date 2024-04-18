@@ -43,7 +43,7 @@ CREATE TABLE tb_instructores (
     id_instructor INT PRIMARY KEY AUTO_INCREMENT,
     nombre_instructor VARCHAR(255) NOT NULL,
     apellido_instructor VARCHAR(255) NOT NULL,
-    telefono VARCHAR(255) UNIQUENOT NULL,
+    telefono VARCHAR(255) UNIQUE NOT NULL,
     estado_empleado ENUM('Activo', 'Inactivo'),
     foto_empleado LONGBLOB NULL,
     id_usuario INT NOT NULL,
@@ -66,9 +66,10 @@ CONSTRAINT chk_cantidad_p CHECK (cantidad_personas >= 1)
 );
 
 -- Tabla de Prestamos
+-- la restriccion sera por medio de un trigger para validadr la fecha
 CREATE TABLE tb_prestamos (
     id_prestamo INT PRIMARY KEY AUTO_INCREMENT,
-    fecha_solicitud DATE CHECK (fecha_solicitud >= CURDATE()) NOT NULL,
+    fecha_solicitud DATE NOT NULL,
     programa_formacion ENUM('HTP','EC','FCAT') NOT NULL,
     estado_prestamo ENUM('Aceptado','Denegado','En Espera'),
     observacion VARCHAR(300) NULL,
@@ -269,40 +270,11 @@ ADD CONSTRAINT fk_detalle_curso_detalle_prestamo FOREIGN KEY (id_detalle_prestam
 
 
 
--- Trigger
-DELIMITER //
 
-CREATE TRIGGER actualizar_stock_disponible
-AFTER INSERT ON tb_inventario_herramienta
-FOR EACH ROW
-BEGIN
-    UPDATE tb_inventario_herramienta
-    SET stock_disponible = stock - en_uso
-    WHERE codigo_herramienta = NEW.codigo_herramienta;
-END;
-//
 
-CREATE TRIGGER actualizar_stock_disponible_update
-AFTER UPDATE ON tb_inventario_herramienta
-FOR EACH ROW
-BEGIN
-    UPDATE tb_inventario_herramienta
-    SET stock_disponible = NEW.stock - NEW.en_uso
-    WHERE codigo_herramienta = NEW.codigo_herramienta;
-END;
-//
+-- Se valida la fecha de prestamo que sea actual y no una anterior
 
-CREATE TRIGGER actualizar_stock_disponible_delete
-AFTER DELETE ON tb_inventario_herramienta
-FOR EACH ROW
-BEGIN
-    UPDATE tb_inventario_herramienta
-    SET stock_disponible = stock - en_uso
-    WHERE codigo_herramienta = OLD.codigo_herramienta;
-END;
-//
 
-DELIMITER ;
 
 -- Procedimiento almacenado
 DELIMITER //
@@ -392,9 +364,10 @@ INSERT INTO tb_cursos (nombre_curso, fecha_inicio, fecha_fin, duracion_curso, ca
 
 -- Insertar datos en la tabla tbPrestamos
 INSERT INTO tb_prestamos (fecha_solicitud, programa_formacion, estado_prestamo, observacion, id_curso, id_usuario) VALUES
-('2024-04-10', 'HTP', 'En Espera', 'Observación 1', 1, 1),
-('2024-04-11', 'EC', 'Denegado', 'Observación 2', 2, 2),
-('2024-04-12', 'FCAT', 'Aceptado', NULL, 3, 3);
+ ('2024-04-18', 'HTP', 'En Espera', 'Observación 1', 1, 1),
+ ('2024-04-20', 'EC', 'Denegado', 'Observación 2', 2, 2),
+ ('2024-04-30', 'FCAT', 'Aceptado', NULL, 3, 3);
+
 
 -- Insertar datos en la tabla tbEspacios
 INSERT INTO tb_espacios (nombre_espacio, capacidad_personas, tipo_espacio, id_especialidad, id_instructor) VALUES
@@ -459,3 +432,5 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON my_loan_bd.* TO 'nombre_base_datos_desar
 
 -- Asignar permisos para ejecutar y crear funciones, procedimientos, triggers y vistas
 GRANT EXECUTE, CREATE ROUTINE, CREATE VIEW, SHOW VIEW ON my_loan_bd.* TO 'nombre_base_datos_desarrollador'@'localhost';
+
+SELECT User, Host FROM mysql.user;
