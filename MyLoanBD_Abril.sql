@@ -34,7 +34,7 @@ CREATE TABLE tb_datos_empleados (
     apellido_empleado VARCHAR(255) NOT NULL,
     telefono VARCHAR(255) UNIQUE NULL,
     estado_empleado ENUM('Activo', 'Inactivo') NOT NULL,
-    foto_empleado LONGBLOB NULL,
+    foto_empleado VARCHAR NULL,
     id_usuario INT NOT NULL
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE tb_instructores (
     apellido_instructor VARCHAR(255) NOT NULL,
     telefono VARCHAR(255) UNIQUE NOT NULL,
     estado_empleado ENUM('Activo', 'Inactivo'),
-    foto_empleado LONGBLOB NULL,
+    foto_empleado VARCHAR NULL,
     id_usuario INT NOT NULL,
     id_especialidad INT NOT NULL
 );
@@ -83,8 +83,8 @@ CREATE TABLE tb_espacios (
     nombre_espacio VARCHAR(255) NOT NULL,
     capacidad_personas INT NULL,
     tipo_espacio ENUM('Taller','Laboratorio'),
-    inventario_doc LONGBLOB NULL,
-    foto_espacio LONGBLOB NULL,
+    inventario_doc VARCHAR NULL,
+    foto_espacio VARCHAR NULL,
     id_especialidad INT NOT NULL,
     id_instructor INT
 );
@@ -95,7 +95,7 @@ CREATE TABLE tb_observaciones (
     id_observacion INT PRIMARY KEY AUTO_INCREMENT,
     fecha_observacion DATE NOT NULL,
     observacion VARCHAR(300) NOT NULL,
-    foto_observacion LONGBLOB NULL,
+    foto_observacion VARCHAR NULL,
     tipo_observacion ENUM('Previa','Durante','Despues','Fuera'),
     tipo_prestamo ENUM('Taller','Laboratorio','Equipo','Material','Herramienta'),
     id_espacio INT NULL,
@@ -139,7 +139,7 @@ CONSTRAINT chk_cantidad_equipos CHECK (cantidad >= 1)
 CREATE TABLE tb_detalle_prestamos (
     id_detalle_prestamo INT PRIMARY KEY AUTO_INCREMENT,
     cantidad INT NOT NULL,
-    unidad VARCHAR(100) NOT NULL,
+    unidad ENUM('unidad','unidades') NOT NULL,
     descripcion VARCHAR(300),
     id_prestamo INT NOT NULL,
     id_espacio INT NULL,
@@ -178,6 +178,23 @@ CREATE TABLE tb_recuperacion_contra (
 
 
 -- Establecer la restricción de clave externa A tb_usuarios
+
+
+ALTER TABLE tb_espacios ADD COLUMN id_institucion INT;
+
+ALTER TABLE tb_equipos ADD COLUMN id_institucion INT;
+
+ALTER TABLE tb_espacios 
+ADD CONSTRAINT fk_tb_espacios_institucion 
+FOREIGN KEY (id_institucion) 
+REFERENCES tb_instituciones(id_institucion);
+
+ALTER TABLE tb_equipos 
+ADD CONSTRAINT fk_tb_equipos_institucion 
+FOREIGN KEY (id_institucion) 
+REFERENCES tb_instituciones(id_institucion);
+
+
 ALTER TABLE tb_usuarios
 ADD CONSTRAINT fk_usuario_cargo FOREIGN KEY (id_cargo) REFERENCES tb_cargos(id_cargo);
 --
