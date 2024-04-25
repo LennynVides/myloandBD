@@ -34,7 +34,7 @@ CREATE TABLE tb_datos_empleados (
     apellido_empleado VARCHAR(255) NOT NULL,
     telefono VARCHAR(255) UNIQUE NULL,
     estado_empleado ENUM('Activo', 'Inactivo') NOT NULL,
-    foto_empleado VARCHAR NULL,
+    foto_empleado VARCHAR(20) NULL,
     id_usuario INT NOT NULL
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE tb_instructores (
     apellido_instructor VARCHAR(255) NOT NULL,
     telefono VARCHAR(255) UNIQUE NOT NULL,
     estado_empleado ENUM('Activo', 'Inactivo'),
-    foto_empleado VARCHAR NULL,
+    foto_empleado VARCHAR(20) NULL,
     id_usuario INT NOT NULL,
     id_especialidad INT NOT NULL
 );
@@ -83,8 +83,8 @@ CREATE TABLE tb_espacios (
     nombre_espacio VARCHAR(255) NOT NULL,
     capacidad_personas INT NULL,
     tipo_espacio ENUM('Taller','Laboratorio'),
-    inventario_doc VARCHAR NULL,
-    foto_espacio VARCHAR NULL,
+    inventario_doc VARCHAR(20) NULL,
+    foto_espacio VARCHAR(20) NULL,
     id_especialidad INT NOT NULL,
     id_instructor INT
 );
